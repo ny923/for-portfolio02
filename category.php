@@ -43,57 +43,12 @@ Template Name: category(商品一覧)
 
     <div class="item">
 
+      <!-- new -->
       <?php
-      $count = isset($_GET['count']) ? intval($_GET['count']) : 10; // 表示件数
-      $sort_option = isset($_GET['sort_option']) ? $_GET['sort_option'] : 'display_order_ASC'; // デフォルト(ｵｽｽﾒ順)を変更
-      $parts = explode('_', $sort_option); // 安い/高い順
-
-      // 確認用
-      // error_log(print_r($parts, true));
-      // var_dump($parts); // ページに出るから駄目
-
-      // デフォルト値を確実にセット
-      $sort = $parts[0] ?? 'display_order';
-      $order = strtoupper($parts[1] ?? 'ASC'); // ASC/DESC を安全に大文字化
-      $custom_order_key = 'display_order'; // おすすめ順のカスタムフィールドキー
-      $price_sort_key = 'price'; // 値段順
-      $slug_sort_key = 'slug';
-      $args = array(
-        'paged' => $paged,
-        'post_type' => 'item',
-        'posts_per_page' => $count,
-        'tax_query' => array(
-          array(
-            'taxonomy' => 'category',
-            'field'  => 'slug',
-            'terms'  => get_queried_object()->slug,
-          ),
-        ),
-      );
-      if ($sort === $price_sort_key) { // 値段順
-        $args['meta_key'] = 'price';    // カスタムフィールドキー
-        $args['orderby'] = 'meta_value_num'; // 数値として比較
-        $args['order']  = $order;     // ASC or DESC
-      } elseif ($sort === $slug_sort_key) {
-        // ★スラッグ順
-        $args['orderby'] = 'name'; // スラッグに対応する指定
-        $args['order'] = $order;
-      } elseif ($sort === $custom_order_key) {
-        // おすすめ順 が明示的に選択された場合
-        $args['meta_key'] = $custom_order_key;
-        $args['orderby'] = array(
-          'meta_value_num' => 'ASC', // 'display_order'の小さい順を最優先
-          'date' => 'DESC'     // 同じ値の場合新しい順
-        );
-      } else {
-        // デフォルト(おすすめ順)の場合
-        $args['meta_key'] = $custom_order_key;
-        $args['orderby'] = array(
-          'meta_value_num' => 'ASC',
-          'date' => 'DESC'
-        );
-      }
-      $query = new WP_Query($args); ?>
+      // ■ 表示用変数の準備　※クエリ自体は functions.php で処理済みなので、ここではフォーム表示用の値だけ取得
+      $count = isset($_GET['count']) ? intval($_GET['count']) : 10;
+      $sort_option = isset($_GET['sort_option']) ? $_GET['sort_option'] : 'display_order_ASC';
+      ?>
 
       <form method="get" class="item-sort">
         <div class="sort-order">
@@ -140,8 +95,12 @@ Template Name: category(商品一覧)
       </form>
 
       <ul class="item-list">
-        <?php if ($query->have_posts()) :
-          while ($query->have_posts()) : $query->the_post(); ?>
+
+        <!-- new -->
+        <?php
+        // ■ ループ開始 $query->have_posts() ではなく、メインクエリの have_posts() を使用
+        if (have_posts()) :
+          while (have_posts()) : the_post(); ?>
 
             <a href="<?php the_permalink(); ?>">
               <li class="item-item">
@@ -163,33 +122,30 @@ Template Name: category(商品一覧)
                   </span>
                   円(税込)
                 </p>
-
               </li>
             </a>
-
           <?php endwhile; ?>
       </ul>
 
-      <!-- ページネーション -->
-      <?php if ($query->max_num_pages > 1) : ?>
-        <div class="pagination">
-          <?php
-            // echo paginate_links(array(
-            //   'total' => $query->max_num_pages,
-            //   'current' => max(1, get_query_var('paged')),
-            //   'format' => '?paged=%#%',
-            //   'prev_text' => __('＜'),
-            //   'next_text' => __('＞'),
-            // ));
 
-            echo paginate_links(array(
-              'total' => $query->max_num_pages,
-              'format' => '?paged=%#%',
-              'current' => max(1, get_query_var('paged')),
-            ));
-          ?>
-        </div>
-      <?php endif; ?>
+      <div class="pagination">
+        <?php
+          // メインクエリ用のページネーション関数を使用
+          echo paginate_links(array(
+            'prev_text' => '&laquo;',
+            'next_text' => '&raquo;',
+            'type'      => 'list',
+            // ページ移動時にGETパラメータ（並び順・件数）を引き継ぐ設定
+            'add_args'  => array(
+              'count' => $count,
+              'sort_option' => $sort_option,
+            ),
+          ));
+        ?>
+      </div>
+
+    <?php else : ?>
+      <p>該当する商品はありませんでした。</p>
     <?php endif; ?>
     <?php wp_reset_postdata(); ?>
 

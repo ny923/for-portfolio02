@@ -166,3 +166,55 @@ function is_smartphone()
 // add_action('manage_pages_custom_column', 'add_column_row_custom', 10, 2);
 // add_filter('manage_posts_columns', 'add_columns_custom');
 // add_action('manage_posts_custom_column', 'add_column_row_custom', 10, 2);
+
+
+/* * カテゴリーアーカイブでカスタム投稿タイプ「item」を表示し、
+ * 表示件数などを制御する（404回避のため）
+ */
+function my_category_query_adjustment($query)
+{
+  // 管理画面ではなく、かつメインクエリの場合のみ実行
+  if (is_admin() || ! $query->is_main_query()) {
+    return;
+  }
+
+  // カテゴリーアーカイブページの場合
+  if ($query->is_category()) {
+
+    // 1. 投稿タイプを 'item' に変更 (必要なら 'post' も含める array('post','item'))
+    $query->set('post_type', 'item');
+
+    // 2. 表示件数の制御 (GETパラメータがあればそれを使う)
+    if (isset($_GET['count'])) {
+      $query->set('posts_per_page', intval($_GET['count']));
+    } else {
+      $query->set('posts_per_page', 10); // デフォルト
+    }
+
+    // 3. 並び順の制御
+    if (isset($_GET['sort_option'])) {
+      $sort_option = $_GET['sort_option'];
+      $parts = explode('_', $sort_option);
+      $sort = $parts[0] ?? 'display_order';
+      $order = strtoupper($parts[1] ?? 'ASC');
+
+      if ($sort === 'price') {
+        $query->set('meta_key', 'price');
+        $query->set('orderby', 'meta_value_num');
+        $query->set('order', $order);
+      } elseif ($sort === 'slug') {
+        $query->set('orderby', 'name');
+        $query->set('order', $order);
+      } else {
+        // おすすめ順など
+        $query->set('meta_key', 'display_order');
+        $query->set('orderby', array('meta_value_num' => 'ASC', 'date' => 'DESC'));
+      }
+    } else {
+      // デフォルトの並び順
+      $query->set('meta_key', 'display_order');
+      $query->set('orderby', array('meta_value_num' => 'ASC', 'date' => 'DESC'));
+    }
+  }
+}
+add_action('pre_get_posts', 'my_category_query_adjustment');
