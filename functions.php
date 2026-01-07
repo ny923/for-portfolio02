@@ -67,7 +67,7 @@ function custom_wpcf7_autop_false()
 add_filter('wpcf7_autop_or_not', 'custom_wpcf7_autop_false');
 
 
-//投稿、固定ページ一覧にスラッグ表示
+//item一覧にスラッグ表示
 function add_columns_slug($columns)
 {
   $columns['slug'] = "スラッグ";
@@ -82,13 +82,12 @@ function add_column_row_slug($column_name, $post_id)
     echo esc_attr($slug);
   }
 }
-add_filter('manage_pages_columns', 'add_columns_slug');
-add_action('manage_pages_custom_column', 'add_column_row_slug', 10, 2);
-add_filter('manage_posts_columns', 'add_columns_slug');
-add_action('manage_posts_custom_column', 'add_column_row_slug', 10, 2);
+add_filter('manage_item_pages_columns', 'add_columns_slug');
+add_action('manage_item_pages_custom_column', 'add_column_row_slug', 10, 2);
 
 
-// 投稿・固定ページ一覧にアイキャッチカラムを追加
+
+// item一覧にアイキャッチカラムを追加
 function add_columns_thumbnail($columns)
 {
   $columns['thumbnail'] = "アイキャッチ";
@@ -108,13 +107,9 @@ function add_column_row_thumbnail($column_name, $post_id)
   }
 }
 
-// 投稿一覧用
-add_filter('manage_posts_columns', 'add_columns_thumbnail');
-add_action('manage_posts_custom_column', 'add_column_row_thumbnail', 10, 2);
+add_filter('manage_item_posts_columns', 'add_columns_thumbnail');
+add_action('manage_item_posts_custom_column', 'add_column_row_thumbnail', 10, 2);
 
-// 固定ページ一覧用
-add_filter('manage_pages_columns', 'add_columns_thumbnail');
-add_action('manage_pages_custom_column', 'add_column_row_thumbnail', 10, 2);
 
 
 // SP 投稿取得件数変動の為

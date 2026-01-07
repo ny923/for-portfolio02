@@ -43,7 +43,7 @@ Template Name: category(商品一覧)
 
     <div class="item">
 
-      <!-- new -->
+
       <?php
       // ■ 表示用変数の準備　※クエリ自体は functions.php で処理済みなので、ここではフォーム表示用の値だけ取得
       $count = isset($_GET['count']) ? intval($_GET['count']) : 10;
@@ -96,9 +96,7 @@ Template Name: category(商品一覧)
 
       <ul class="item-list">
 
-        <!-- new -->
         <?php
-        // ■ ループ開始 $query->have_posts() ではなく、メインクエリの have_posts() を使用
         if (have_posts()) :
           while (have_posts()) : the_post(); ?>
 
