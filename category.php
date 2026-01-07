@@ -45,7 +45,8 @@ Template Name: category(商品一覧)
 
 
       <?php
-      // ■ 表示用変数の準備　※クエリ自体は functions.php で処理済みなので、ここではフォーム表示用の値だけ取得
+      // クエリ自体はfunctionsで処理済み
+      // ここではフォーム表示用の値だけ取得
       $count = isset($_GET['count']) ? intval($_GET['count']) : 10;
       $sort_option = isset($_GET['sort_option']) ? $_GET['sort_option'] : 'display_order_ASC';
       ?>

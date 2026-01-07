@@ -82,8 +82,8 @@ function add_column_row_slug($column_name, $post_id)
     echo esc_attr($slug);
   }
 }
-add_filter('manage_item_pages_columns', 'add_columns_slug');
-add_action('manage_item_pages_custom_column', 'add_column_row_slug', 10, 2);
+add_filter('manage_item_posts_columns', 'add_columns_slug');
+add_action('manage_item_posts_custom_column', 'add_column_row_slug', 10, 2);
 
 
 
@@ -122,7 +122,7 @@ function is_smartphone()
 
 
 // 修正に必要な時出す
-// 投稿、固定ページ一覧にスラッグとカスタムフィールドを表示
+// item一覧にスラッグとカスタムフィールドを表示
 // function add_columns_custom($columns)
 // {
 //   $columns['slug'] = "スラッグ";
@@ -156,11 +156,8 @@ function is_smartphone()
 //   }
 // }
 
-// // 投稿と固定ページに適用
-// add_filter('manage_pages_columns', 'add_columns_custom');
-// add_action('manage_pages_custom_column', 'add_column_row_custom', 10, 2);
-// add_filter('manage_posts_columns', 'add_columns_custom');
-// add_action('manage_posts_custom_column', 'add_column_row_custom', 10, 2);
+// add_filter('manage_item_posts_columns', 'add_columns_custom');
+// add_action('manage_item_posts_custom_column', 'add_column_row_custom', 10, 2);
 
 
 /* * カテゴリーアーカイブでカスタム投稿タイプ「item」を表示し、
